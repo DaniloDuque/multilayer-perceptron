@@ -1,8 +1,7 @@
 """
-Clasificador Neural Network - Tarea Completa (TP3)
+Clasificador Neural Network
 
-Este módulo implementa todas las tareas especificadas en el enunciado:
-1. Generación de datos linealmente separables y no separables en R²
+1. Generación de datos linealmente separables y no separables en R2
 2. Entrenamiento de 4 configuraciones de MLP (M=20/2, con/sin momentum)
 3. Evaluación con split 80% train / 20% validación
 4. Captura de errores vs épocas para visualización
@@ -17,7 +16,6 @@ Parámetros de generación de datos:
   - Separables: n_samples=500, clusters=2, std=1.0
   - No separables: n_samples=500, clusters=2, std=4.0
 
-Autor: TP3 - Implementación
 """
 
 import torch
@@ -59,7 +57,7 @@ def get_device():
 
 def generar_datos_80_20(separable=True, n_samples=500, random_state=42, device=None):
     """
-    Genera datos de clasificación binaria en R² con split 80% training / 20% validación.
+    Genera datos de clasificación binaria en R2 con split 80% training / 20% validación.
     
     Envuelve la función generar_datos_R2() y repartita los datos al 80/20 usando
     train_test_split de sklearn.
