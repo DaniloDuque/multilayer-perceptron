@@ -80,7 +80,7 @@ class MultilayerPerceptron:
         ys : tensor (n, K)
         """
         n = X.shape[0]
-        ones = torch.ones(n, 1)
+        ones = torch.ones(n, 1, device=X.device)
 
         # Entrada aumentada: x_0 = 1 antepuesto  -> shape (n, D+1)
         X_aug = torch.hstack([ones, X])
@@ -133,7 +133,7 @@ class MultilayerPerceptron:
 
     def update_weights(self, X):
         n = X.shape[0]
-        ones = torch.ones(n, 1)
+        ones = torch.ones(n, 1, device=X.device)
 
         X_aug  = torch.hstack([ones, X])           # (n, D+1)
         yo_aug = torch.hstack([ones, self.yo])     # (n, M+1)

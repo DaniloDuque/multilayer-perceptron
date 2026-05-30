@@ -7,26 +7,24 @@ from sklearn.model_selection import train_test_split
 #
 #  Usa make_blobs con 2 centros. Si @p separable es True, la desviación estándar
 #  es 1.0 (clases bien separadas); si es False, es 4.0 (clases solapadas).
-#  Agrega una columna de unos como término de bias y convierte todo a tensores PyTorch.
+#  NO agrega columna de bias — MultilayerPerceptron la añade internamente.
 #
 #  @param separable    Si es True genera datos linealmente separables.
 #  @param n_samples    Número total de muestras a generar.
+#  @param test_size    Proporción del conjunto de prueba (0 a 1).
 #  @param random_state Semilla para reproducibilidad.
 #  @param device       Dispositivo PyTorch destino (None = CPU).
 #  @return Tupla (X_train, X_test, T_train, T_test) como tensores float32.
-def generar_datos_R2(separable=True, n_samples=500, random_state=42, device=None):
+def generate_data(separable=True, n_samples=500, test_size=0.2,
+                  random_state=42, device=None):
     std = 1.0 if separable else 4.0
-    X, y = make_blobs(n_samples=n_samples, centers=2, 
+    X, y = make_blobs(n_samples=n_samples, centers=2,
                       cluster_std=std, random_state=random_state)
-    
-    # Agregar columna de bias (unos)
-    X = np.hstack([np.ones((X.shape[0], 1)), X])
-    
+
     X_train, X_test, T_train, T_test = train_test_split(
-        X, y, test_size=0.3, random_state=random_state
+        X, y, test_size=test_size, random_state=random_state
     )
-    
-    # Convertir a tensores
+
     X_train = torch.tensor(X_train, dtype=torch.float32, device=device)
     X_test  = torch.tensor(X_test,  dtype=torch.float32, device=device)
     T_train = torch.tensor(T_train, dtype=torch.float32, device=device).unsqueeze(1)
