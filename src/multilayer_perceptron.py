@@ -17,7 +17,7 @@ class MultilayerPerceptron:
     max_weights       : float      rango inicial de pesos uniforme en [-max_weights, max_weights]
     """
 
-    def __init__(self, neurons_per_layer, alpha, gamma, max_weights):
+    def __init__(self, neurons_per_layer, alpha, gamma, max_weights, device=None):
         D, M, K = neurons_per_layer
         self.D = D
         self.M = M
@@ -26,10 +26,10 @@ class MultilayerPerceptron:
         self.gamma = gamma
 
         # W^o: (D+1) x M  — fila 0 corresponde al bias W^o_{0,m}
-        self.Wo = torch.FloatTensor(D + 1, M).uniform_(-max_weights, max_weights)
+        self.Wo = torch.FloatTensor(D + 1, M).uniform_(-max_weights, max_weights).to(device)
 
         # W^s: (M+1) x K  — fila 0 corresponde al bias W^s_{0,k}
-        self.Ws = torch.FloatTensor(M + 1, K).uniform_(-max_weights, max_weights)
+        self.Ws = torch.FloatTensor(M + 1, K).uniform_(-max_weights, max_weights).to(device)
 
         # Terminos de momentum del paso anterior
         self.dWo_prev = torch.zeros_like(self.Wo)

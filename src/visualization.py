@@ -33,7 +33,9 @@ _COLORS_CONFIGS = {'A': '#2E86AB', 'B': '#A23B72', 'C': '#F18F01', 'D': '#C73E1D
 #  @return Figure de matplotlib.
 def plot_datasets(X_sep, T_sep, X_nosep, T_nosep, output_path=None):
     def _to_np(t):
-        return t.numpy() if hasattr(t, 'numpy') else np.asarray(t)
+        if hasattr(t, 'cpu'):
+            return t.cpu().numpy()
+        return np.asarray(t)
 
     X_sep   = _to_np(X_sep);   T_sep   = _to_np(T_sep).ravel()
     X_nosep = _to_np(X_nosep); T_nosep = _to_np(T_nosep).ravel()
