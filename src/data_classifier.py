@@ -68,3 +68,20 @@ def train_all_configs(X_train, T_train, X_val, T_val, num_epochs=50):
                                        num_epochs=num_epochs)
         results[letter]['params']['config_letter'] = letter
     return results
+
+
+## @brief Crea la función objetivo para HyperparameterTuner dado un M fijo.
+#
+#  @param M          Neuronas en la capa oculta (fijo durante la optimización).
+#  @param X_train    Tensor de entrenamiento.
+#  @param T_train    Tensor de etiquetas de entrenamiento.
+#  @param X_val      Tensor de validación.
+#  @param T_val      Tensor de etiquetas de validación.
+#  @param num_epochs Épocas de entrenamiento por trial.
+#  @return Callable  (dict con 'alpha' y 'gamma') -> float (val MSE).
+def make_objective(M, X_train, T_train, X_val, T_val, num_epochs=50):
+    def objective(params):
+        result = train_config(M, params['gamma'], X_train, T_train, X_val, T_val,
+                              num_epochs=num_epochs, alpha=params['alpha'])
+        return result['final_val_error']
+    return objective
