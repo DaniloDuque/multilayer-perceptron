@@ -13,6 +13,7 @@ Uso:
 import optuna
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
@@ -135,7 +136,6 @@ class HyperparameterTuner:
 
     def summary(self, top_n=5):
         """DataFrame con los mejores top_n trials."""
-        import pandas as pd
         self._require_study()
 
         rows = [{'trial': t.number, 'valor': round(t.value, 6), **t.params}
