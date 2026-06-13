@@ -4,12 +4,15 @@
 import torch
 from multilayer_perceptron import MultilayerPerceptron
 
+# Hiperparámetros a evaluar: combinaciones de α (learning rate) y γ (momentum). 
 CONFIGS = [
-    (0.01, 0.0),
-    (0.10, 0.0),
+    (0.7, 0),
+    (0.7, 1),
+    # (0.01, 0.0),
+    # (0.10, 0.0),
     (0.50, 0.0),
-    (0.01, 0.9),
-    (0.10, 0.9),
+    # (0.01, 0.9),
+    # (0.10, 0.9),
     (0.50, 0.9),
 ]
 
