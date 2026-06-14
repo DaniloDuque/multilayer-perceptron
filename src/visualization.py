@@ -5,6 +5,7 @@ Expone funciones puras que el notebook orquestador llama directamente.
 No contiene lógica de carga de archivos ni main().
 """
 
+import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
