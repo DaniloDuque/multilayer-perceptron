@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from matplotlib.gridspec import GridSpec
+from matplotlib.colors import ListedColormap
 
 sns.set_style("whitegrid")
 plt.rcParams.update({
@@ -42,8 +43,8 @@ def plot_datasets(X_sep, T_sep, X_nosep, T_nosep, output_path=None):
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     for ax, X, T, title in [
-        (axes[0], X_sep,   T_sep,   'Separable (std=1.0)'),
-        (axes[1], X_nosep, T_nosep, 'No-separable (std=4.0)'),
+        (axes[0], X_sep,   T_sep,   'Separable'),
+        (axes[1], X_nosep, T_nosep, 'No-separable'),
     ]:
         for cls in [0, 1]:
             mask = T == cls
@@ -53,6 +54,83 @@ def plot_datasets(X_sep, T_sep, X_nosep, T_nosep, output_path=None):
         ax.set_title(title, fontweight='bold')
         ax.set_xlabel('$x_1$'); ax.set_ylabel('$x_2$')
         ax.legend()
+
+    fig.tight_layout()
+    if output_path:
+        fig.savefig(output_path, dpi=150, bbox_inches='tight')
+    return fig
+
+## @brief Grafica la superficie de decisión de un MLP entrenado sobre Two Moons.
+#
+#  Recibe los tensores ya generados por generate_moons_data y el modelo entrenado.
+#  Construye una malla sobre [0,1]² (o el rango real de X) y colorea cada región
+#  según la clase predicha, sobreponiendo los puntos de train y validación.
+#
+#  @param model       Instancia de MultilayerPerceptron ya entrenada.
+#  @param X_train     Tensor (n_train, 2) — conjunto de entrenamiento.
+#  @param T_train     Tensor (n_train, 1) — etiquetas de entrenamiento.
+#  @param X_val       Tensor (n_val, 2)   — conjunto de validación.
+#  @param T_val       Tensor (n_val, 1)   — etiquetas de validación.
+#  @param title       Título del gráfico.
+#  @param h           Resolución de la malla (paso entre puntos).
+#  @param output_path Ruta de salida (None = no guardar).
+#  @return Figure de matplotlib.
+def plot_decision_surface_moons(model, X_train, T_train, X_val, T_val,
+                                title='Superficie de decisión — Two Moons',
+                                h=0.005, output_path=None):
+
+    def _to_np(t):
+        if hasattr(t, 'cpu'):
+            return t.cpu().numpy()
+        return np.asarray(t)
+
+    X_tr = _to_np(X_train); T_tr = _to_np(T_train).ravel()
+    X_vl = _to_np(X_val);   T_vl = _to_np(T_val).ravel()
+
+    # Rango de la malla a partir de los datos reales
+    X_all = np.vstack([X_tr, X_vl])
+    x_min, x_max = X_all[:, 0].min() - 0.05, X_all[:, 0].max() + 0.05
+    y_min, y_max = X_all[:, 1].min() - 0.05, X_all[:, 1].max() + 0.05
+
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
+
+    device = next(iter(model.parameters())).device if hasattr(model, 'parameters') else None
+    grid   = torch.FloatTensor(np.c_[xx.ravel(), yy.ravel()])
+    if device is not None:
+        grid = grid.to(device)
+
+    Z = model.predict(grid).cpu().numpy().reshape(xx.shape)
+
+    fig, ax = plt.subplots(figsize=(7, 6))
+
+    # Superficie de decisión
+    ax.contourf(xx, yy, Z,
+                cmap=ListedColormap(['#FFAAAA', '#AAAAFF']),
+                alpha=0.55)
+    ax.contour(xx, yy, Z, levels=[0.5], colors='k', linewidths=1.2, linestyles='--')
+
+    # Puntos de entrenamiento
+    for cls, color, marker in [(0, _COLORS_CLASSES[0], 'o'),
+                                (1, _COLORS_CLASSES[1], 'o')]:
+        mask = T_tr == cls
+        ax.scatter(X_tr[mask, 0], X_tr[mask, 1],
+                   c=color, marker=marker, s=22, alpha=0.8,
+                   edgecolors='k', linewidth=0.4,
+                   label=f'Train — Clase {cls}')
+
+    # Puntos de validación (rombo, borde más grueso para distinguirlos)
+    for cls, color in [(0, _COLORS_CLASSES[0]), (1, _COLORS_CLASSES[1])]:
+        mask = T_vl == cls
+        ax.scatter(X_vl[mask, 0], X_vl[mask, 1],
+                   c=color, marker='D', s=28, alpha=0.9,
+                   edgecolors='k', linewidth=0.8,
+                   label=f'Val   — Clase {cls}')
+
+    ax.set_title(title, fontweight='bold')
+    ax.set_xlabel('$x_1$')
+    ax.set_ylabel('$x_2$')
+    ax.legend(loc='upper right', framealpha=0.85)
 
     fig.tight_layout()
     if output_path:
