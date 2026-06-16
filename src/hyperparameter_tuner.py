@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# Reducir el nivel de logging de Optuna para no saturar la salida.
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 

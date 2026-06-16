@@ -66,14 +66,17 @@ class ACRIMADataset(Dataset):
 
     def __getitem__(self, idx):
         img_path, label = self.samples[idx]
+        # Abrir la imagen, convertirla a RGB y redimensionarla al tamaño deseado.
         img = Image.open(img_path).convert("RGB").resize(self.img_size, Image.LANCZOS)
         img_tensor = torch.tensor(np.array(img), dtype=torch.float32)  # (H, W, 3)
 
         # ── NORMALIZACIÓN ℓ∞ ──────────────────────────────────────────────
+        # Normaliza cada imagen por su valor máximo para obtener rango [0,1].
         max_val = img_tensor.max()
         if max_val > 0:
             img_tensor = img_tensor / max_val   # ∈ [0, 1]
         # ──────────────────────────────────────────────────────────────────
 
+        # PyTorch espera formato (C, H, W) en lugar de (H, W, C).
         return img_tensor.permute(2, 0, 1), label  # (C, H, W)
 

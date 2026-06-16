@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.datasets import make_blobs, make_moons
 from sklearn.model_selection import train_test_split
 
+# Genera datos sintéticos y los convierte a tensores de PyTorch para entrenar.
 ## @brief Genera datos sintéticos de clasificación binaria y los divide en train/test.
 #
 #  Usa make_blobs con 2 centros. Si @p separable es True, la desviación estándar
@@ -25,6 +26,7 @@ def generate_data(separable=True, n_samples=500, test_size=0.2,
         X, y, test_size=test_size, random_state=random_state
     )
 
+    # Convertir los datos de NumPy a tensores PyTorch float32.
     X_train = torch.tensor(X_train, dtype=torch.float32, device=device)
     X_test  = torch.tensor(X_test,  dtype=torch.float32, device=device)
     T_train = torch.tensor(T_train, dtype=torch.float32, device=device).unsqueeze(1)

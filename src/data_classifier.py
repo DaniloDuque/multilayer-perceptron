@@ -11,6 +11,7 @@ Configuraciones de entrenamiento:
 import torch
 from multilayer_perceptron import MultilayerPerceptron
 
+# Configuraciones fijas para comparar distintas combinaciones de M y momentum.
 CONFIGS = [
     (20, 0.9, "A"),
     (20, 0.0, "B"),
@@ -62,6 +63,7 @@ def train_config(M, gamma, X_train, T_train, X_val, T_val,
 #  @param num_epochs Épocas por configuración.
 #  @return dict {'A': ..., 'B': ..., 'C': ..., 'D': ...}.
 def train_all_configs(X_train, T_train, X_val, T_val, num_epochs=50):
+    # Ejecuta cada configuración A-D y guarda los resultados de entrenamiento.
     results = {}
     for M, gamma, letter in CONFIGS:
         results[letter] = train_config(M, gamma, X_train, T_train, X_val, T_val,
